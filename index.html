@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Graphink</title>
+	<style>
+/*------------------------------------*\
+    RESET
+\*------------------------------------*/
+/* http://meyerweb.com/eric/tools/css/reset/ 
+    v2.0b1 | 201101 
+    NOTE:WORK IN PROGRESS
+    USE WITH CAUTION AND TEST WITH ABANDON */
+
+html,body,div,span,applet,object,iframe,
+h1,h2,h3,h4,h5,h6,p,blockquote,pre,
+a,abbr,acronym,address,big,cite,code,
+del,dfn,em,img,ins,kbd,q,s,samp,
+small,strike,strong,sub,sup,tt,var,
+b,u,i,center,
+dl,dt,dd,ol,ul,li,
+fieldset,form,label,legend,
+table,caption,tbody,tfoot,thead,tr,th,td,
+article,aside,canvas,details,figcaption,figure,
+footer,header,hgroup,menu,nav,section,summary,
+time,mark,audio,video{
+    margin:0;
+    padding:0;
+    border:0;
+    outline:0;
+    font-size:100%;
+    font:inherit;
+    vertical-align:baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article,aside,details,figcaption,figure,
+footer,header,hgroup,menu,nav,section{
+    display:block;
+}
+body{
+    line-height:1;
+}
+ol,ul{
+    list-style:none;
+}
+blockquote,q{
+    quotes:none;
+}
+blockquote:before,blockquote:after,
+q:before,q:after{
+    content:’’;
+    content:none;
+}
+/* remember to define visible focus styles! 
+:focus{
+    outline:?????;
+} */
+
+/* remember to highlight inserts somehow! */
+ins{
+    text-decoration:none;
+}
+del{
+    text-decoration:line-through;
+}
+
+table{
+    border-collapse:collapse;
+    border-spacing:0;
+}
+		
+		/*custom styles*/
+		body,html{
+			width: 100%;
+			height: 100%;
+		}
+		#selection{
+			max-width: 650px;
+			margin: 20px auto;
+			text-align: center;
+		}
+		h1{
+			margin-bottom: 10px;
+		}
+		#file-input{
+			display: none;
+		}
+		.loader{
+			font-size: 14px;
+			font-weight: normal;
+			color: #1467a3;
+			cursor: pointer;
+			background: none;
+			border: none;
+			padding: 0;
+			text-decoration: underline;
+		}
+		
+		#cy {
+			display: block;
+			width: 100%;
+			height: 100%;
+			visibility: hidden;
+		}
+	</style>
+	<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+</head>
+
+<body>
+	<div id="selection">
+		<h1>
+			Graphink
+		</h1>
+		<p>
+			Playing around with ink and graphs.
+		</p>
+		
+		<input type="file" id="file-input" accept=".json" />
+		<label for="file-input" class="loader">Load a .json file</label>
+		or
+		<button class="loader" onclick="loadSample()">The Intercept</button>
+	</div>
+	
+	<div id="cy">
+	</div>
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/3.2.2/es6-promise.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/1.0.0/fetch.min.js"></script>
+	<script src="node_modules/inkjs/dist/ink.js"></script>
+	<script src="node_modules/cytoscape/dist/cytoscape.js"></script>
+	<script>
+		var myStory,
+			nodes = {},
+			palette = ['#AD343E', '#0B3954', '#F2AF29', '#2E4057', '#2EC4B6', '#FF570A', '#774C60', '#1A1423', '#5E0B15'];
+		
+		document.addEventListener('DOMContentLoaded', function(){
+			document.querySelector('#file-input').addEventListener('change', function(event){
+				var file = event.target.files[0];
+				
+				if (!file) return;
+				
+				var reader = new FileReader();
+				reader.onload = function(e) {
+					var inkFile = e.target.result;
+					init(inkFile);
+				};
+				reader.readAsText(file);
+			});
+		});
+		
+		function loadSample(){
+			fetch('intercept.ink.json')
+			.then(function(response){
+				return response.text();
+			})
+			.then(function(inkFile){
+				init(inkFile);
+			});
+		}
+		
+		function init(inkFile){
+			//generate the story tree
+			myStory = new inkjs.Story(inkFile);
+			exploreRecursively(null);
+			
+			console.log(nodes)
+
+			//set up the graph
+			var graphNodes = [];
+			for (var id in nodes){
+				var node = nodes[id];
+				graphNodes.push({
+					group: 'nodes',
+					data: {
+						id: node.id,
+						text: node.text.substring(0, 20)+'...',
+						fulltext: node.text,
+						color: getBackgroundColorFromId(node.id),
+					}
+				});
+			}
+
+			for (var id in nodes){
+				var node = nodes[id];
+				node.choices.forEach(choice => {
+					if (!nodes[choice.next]){
+						console.log('skipping choice, path '+choice.next+' not generated')
+						return;
+					}
+
+					graphNodes.push({
+						group: 'edges',
+						selectable: false,
+						grabable: false,
+						data: {
+							id: node.id + '-c' + choice.index,
+							text: choice.text,
+							source: node.id,
+							target: choice.next,
+							color: getBackgroundColorFromId(node.id),
+						}
+					});
+				});
+			}
+
+			var cy = cytoscape({
+				container: document.getElementById('cy'),
+				elements: graphNodes,
+				style: [{
+					selector: 'node',
+					style: {
+						'width': '30px',
+						'height': '30px',
+						'background-color': 'data(color)',
+						'label': 'data(text)',
+						'color': '#333',
+						'transition-property': 'width, height',
+						'transition-duration': .6,
+					}
+				},
+				{
+					selector: 'node:selected',
+					style: {
+						'width': '50px',
+						'height': '50px',
+						'label': 'data(fulltext)',
+						'text-wrap': 'wrap',
+						'text-max-width': '300px',
+						'text-background-color': '#fff',
+						'text-background-opacity': '.8'
+					}
+				},
+				{
+					selector: 'edge',
+					style: {
+						'width': 3,
+						'line-color': 'data(color)',
+						'source-label': 'data(text)',
+						'source-text-offset': '100%',
+						'text-opacity': .6,
+					}
+				}],
+				layout: {
+					name: 'breadthfirst',
+					directed: true,
+				}
+			});
+			
+			document.querySelector('#selection').style.display = 'none';
+			document.querySelector('#cy').style.visibility = 'visible';
+		}
+		
+		function getCurrentNodeId(){
+			return myStory.state.currentPath ? myStory.state.currentPath.toString() : '';
+		}
+		
+		function getBackgroundColorFromId(id){
+			id = id.indexOf('.') > 0 ? id.substr(0, id.indexOf('.')) : id;
+			var value = id.split().map(c => c.charCodeAt(0)).reduce((a, b) => a + b, 0);
+			return palette[value % palette.length]
+		}
+		
+		function exploreRecursively(parent){
+			var id = getCurrentNodeId();
+			var text = '';
+			try{
+				text = myStory.ContinueMaximally()
+			}
+			catch(e){
+				console.warn(e.message+' at '+id);
+				text = e.message;
+			}
+			
+			var node = {
+				id: id,
+				text: text,
+				parent: parent,
+				choices: new Array(myStory.currentChoices.length)
+			};
+			
+			//check if we need to create a variation of an existing node
+			var variantCounter = 0,
+				originalId = id;
+			
+			while(nodes[id]){
+				var textVariation = nodes[id].text != node.text,
+					choiceVariation = nodes[id].choices.length != node.choices.length;
+				
+				if (!(choiceVariation && textVariation)){
+					//te node with the same id has the same choices, we can discard this one
+					return id;
+				}
+				
+				if (++variantCounter > 10){
+					console.log('exited after '+variantCounter+' identical variations');
+					return originalId;
+				}
+				
+				node.id = id = originalId + '.v-' + variantCounter;
+			}
+			nodes[id] = node;
+			
+			if (myStory.currentChoices.length > 0){
+				for (let i = 0; i < myStory.currentChoices.length; ++i) {
+//					console.log(node.id + ': choice ' + i);
+					let choice = myStory.currentChoices[i];
+					let choiceNode = {
+						id: choice.pathStringOnChoice,
+						index: choice.index,
+						text: choice.text,
+						next: null
+					};
+					
+					//explore the choice
+					let stateBeforeChoice = myStory.state.toJson();
+					
+					myStory.ChooseChoiceIndex(i);
+					choiceNode.next = exploreRecursively(node.id);
+					node.choices[i] = choiceNode;
+					myStory.state.LoadJson(stateBeforeChoice);
+				}
+			}
+			
+			return id;
+		}
+	</script>
+</body>
+</html>
