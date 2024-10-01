@@ -1,91 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="utf-8">
 	<title>Graphink</title>
 	<style>
-/*------------------------------------*\
+		/*------------------------------------*\
     RESET
 \*------------------------------------*/
-/* http://meyerweb.com/eric/tools/css/reset/ 
-    v2.0b1 | 201101 
+		/* http://meyerweb.com/eric/tools/css/reset/
+    v2.0b1 | 201101
     NOTE:WORK IN PROGRESS
     USE WITH CAUTION AND TEST WITH ABANDON */
 
-html,body,div,span,applet,object,iframe,
-h1,h2,h3,h4,h5,h6,p,blockquote,pre,
-a,abbr,acronym,address,big,cite,code,
-del,dfn,em,img,ins,kbd,q,s,samp,
-small,strike,strong,sub,sup,tt,var,
-b,u,i,center,
-dl,dt,dd,ol,ul,li,
-fieldset,form,label,legend,
-table,caption,tbody,tfoot,thead,tr,th,td,
-article,aside,canvas,details,figcaption,figure,
-footer,header,hgroup,menu,nav,section,summary,
-time,mark,audio,video{
-    margin:0;
-    padding:0;
-    border:0;
-    outline:0;
-    font-size:100%;
-    font:inherit;
-    vertical-align:baseline;
-}
-/* HTML5 display-role reset for older browsers */
-article,aside,details,figcaption,figure,
-footer,header,hgroup,menu,nav,section{
-    display:block;
-}
-body{
-    line-height:1;
-}
-ol,ul{
-    list-style:none;
-}
-blockquote,q{
-    quotes:none;
-}
-blockquote:before,blockquote:after,
-q:before,q:after{
-    content:’’;
-    content:none;
-}
-/* remember to define visible focus styles! 
+		html,
+		body,
+		div,
+		span,
+		applet,
+		object,
+		iframe,
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		h6,
+		p,
+		blockquote,
+		pre,
+		a,
+		abbr,
+		acronym,
+		address,
+		big,
+		cite,
+		code,
+		del,
+		dfn,
+		em,
+		img,
+		ins,
+		kbd,
+		q,
+		s,
+		samp,
+		small,
+		strike,
+		strong,
+		sub,
+		sup,
+		tt,
+		var,
+		b,
+		u,
+		i,
+		center,
+		dl,
+		dt,
+		dd,
+		ol,
+		ul,
+		li,
+		fieldset,
+		form,
+		label,
+		legend,
+		table,
+		caption,
+		tbody,
+		tfoot,
+		thead,
+		tr,
+		th,
+		td,
+		article,
+		aside,
+		canvas,
+		details,
+		figcaption,
+		figure,
+		footer,
+		header,
+		hgroup,
+		menu,
+		nav,
+		section,
+		summary,
+		time,
+		mark,
+		audio,
+		video {
+			margin: 0;
+			padding: 0;
+			border: 0;
+			outline: 0;
+			font-size: 100%;
+			font: inherit;
+			vertical-align: baseline;
+		}
+
+		/* HTML5 display-role reset for older browsers */
+		article,
+		aside,
+		details,
+		figcaption,
+		figure,
+		footer,
+		header,
+		hgroup,
+		menu,
+		nav,
+		section {
+			display: block;
+		}
+
+		body {
+			line-height: 1;
+		}
+
+		ol,
+		ul {
+			list-style: none;
+		}
+
+		blockquote,
+		q {
+			quotes: none;
+		}
+
+		blockquote:before,
+		blockquote:after,
+		q:before,
+		q:after {
+			content: ’’;
+			content: none;
+		}
+
+		/* remember to define visible focus styles!
 :focus{
     outline:?????;
 } */
 
-/* remember to highlight inserts somehow! */
-ins{
-    text-decoration:none;
-}
-del{
-    text-decoration:line-through;
-}
+		/* remember to highlight inserts somehow! */
+		ins {
+			text-decoration: none;
+		}
 
-table{
-    border-collapse:collapse;
-    border-spacing:0;
-}
-		
+		del {
+			text-decoration: line-through;
+		}
+
+		table {
+			border-collapse: collapse;
+			border-spacing: 0;
+		}
+
 		/*custom styles*/
-		body,html{
+		body,
+		html {
 			width: 100%;
 			height: 100%;
 		}
-		#selection{
+
+		#selection {
 			max-width: 650px;
 			margin: 20px auto;
 			text-align: center;
 		}
-		h1{
+
+		h1 {
 			margin-bottom: 10px;
 		}
-		#file-input{
+
+		#file-input {
 			display: none;
 		}
-		.loader{
+
+		.loader {
 			font-size: 14px;
 			font-weight: normal;
 			color: #1467a3;
@@ -95,7 +187,7 @@ table{
 			padding: 0;
 			text-decoration: underline;
 		}
-		
+
 		#cy {
 			display: block;
 			width: 100%;
@@ -114,77 +206,114 @@ table{
 		<p>
 			Playing around with ink and graphs.
 		</p>
-		
+
 		<input type="file" id="file-input" accept=".json" />
 		<label for="file-input" class="loader">Load a .json file</label>
 		or
 		<button class="loader" onclick="loadSample()">The Intercept</button>
 	</div>
-	
+
 	<div id="cy">
 	</div>
-	
+
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/3.2.2/es6-promise.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/1.0.0/fetch.min.js"></script>
-	<script src="ink.js"></script>
-	<script src="cytoscape.js"></script>
+	<script src="https://unpkg.com/inkjs@2.2.4/dist/ink-full.js"></script>
+	<script src="https://unpkg.com/cytoscape@3.30.1/dist/cytoscape.min.js"></script>
+	<script src="https://unpkg.com/klayjs@0.4.1/klay.js"></script>
+	<script src="cytoscape-klay.js"></script>
+
 	<script>
 		var myStory,
 			nodes = {},
 			palette = ['#AD343E', '#0B3954', '#F2AF29', '#2E4057', '#2EC4B6', '#FF570A', '#774C60', '#1A1423', '#5E0B15'];
-		
-		document.addEventListener('DOMContentLoaded', function(){
-			document.querySelector('#file-input').addEventListener('change', function(event){
+
+		document.addEventListener('DOMContentLoaded', function () {
+			document.querySelector('#file-input').addEventListener('change', function (event) {
 				var file = event.target.files[0];
-				
+
 				if (!file) return;
-				
+
 				var reader = new FileReader();
-				reader.onload = function(e) {
+				reader.onload = function (e) {
 					var inkFile = e.target.result;
 					init(inkFile);
 				};
 				reader.readAsText(file);
 			});
 		});
-		
-		function loadSample(){
+
+		function loadSample() {
 			fetch('intercept.ink.json')
-			.then(function(response){
-				return response.text();
-			})
-			.then(function(inkFile){
-				init(inkFile);
-			});
+				.then(function (response) {
+					return response.text();
+				})
+				.then(function (inkFile) {
+					init(inkFile);
+				});
 		}
-		
-		function init(inkFile){
+
+		function init(inkFile) {
 			//generate the story tree
 			myStory = new inkjs.Story(inkFile);
-			exploreRecursively(null);
-			
+
+			exploreRecursively();
+			optimize();
+
+			// So far the graph should represent the original story exactly.
+			// Now we combine nodes with the same text but different choices.
+			// This makes the graph technically incorrect, but practically much easier to read.
+			{
+				let texts = {};
+				for (var id in nodes) {
+					texts[hashOf(nodes[id].text)] = [];
+				}
+
+				for (var id in nodes) {
+					texts[hashOf(nodes[id].text)].push(id);
+				}
+
+				for (var hash in texts) {
+					combine(texts[hash], true);
+				}
+
+				// Now some nodes have duplicate choices. Remove them.
+				for (var id in nodes) {
+					let choices = [];
+					let choiceSet = new Set();
+					for (const choice of nodes[id].choices) {
+						const choiceName = choice.text + "->" + choice.next;
+						if (!choiceSet.has(choiceName)) {
+							choiceSet.add(choiceName);
+							choices.push(choice);
+						}
+					}
+					nodes[id].choices = choices;
+				}
+			}
+
 			console.log(nodes)
 
 			//set up the graph
 			var graphNodes = [];
-			for (var id in nodes){
+			for (var id in nodes) {
 				var node = nodes[id];
 				graphNodes.push({
 					group: 'nodes',
 					data: {
 						id: node.id,
-						text: node.text.substring(0, 20)+'...',
+						text: node.text.substring(0, 20) + '...',
 						fulltext: node.text,
 						color: getBackgroundColorFromId(node.id),
 					}
 				});
 			}
 
-			for (var id in nodes){
+			for (var id in nodes) {
 				var node = nodes[id];
 				node.choices.forEach(choice => {
-					if (!nodes[choice.next]){
-						console.log('skipping choice, path '+choice.next+' not generated')
+					if (!nodes[choice.next]) {
+						console.log('skipping choice, path ' + choice.next + ' not generated')
 						return;
 					}
 
@@ -238,91 +367,179 @@ table{
 						'source-label': 'data(text)',
 						'source-text-offset': '100%',
 						'text-opacity': .6,
+						'target-arrow-shape': 'triangle',
+						'target-arrow-color': 'data(color)',
+						'curve-style': 'bezier',
 					}
 				}],
 				layout: {
-					name: 'breadthfirst',
-					directed: true,
+					name: 'klay',
+					klay: {
+						direction: 'DOWN',
+						edgeRouting: 'POLYLINE',
+						fixedAlignment: 'BALANCED',
+						layoutHierarchy: true,
+					},
 				}
 			});
-			
+
 			document.querySelector('#selection').style.display = 'none';
 			document.querySelector('#cy').style.visibility = 'visible';
 		}
-		
-		function getCurrentNodeId(){
-			return myStory.state.currentPath ? myStory.state.currentPath.toString() : '';
+
+
+		const MD5 = function (d) { var r = M(V(Y(X(d), 8 * d.length))); return r.toLowerCase() }; function M(d) { for (var _, m = "0123456789ABCDEF", f = "", r = 0; r < d.length; r++)_ = d.charCodeAt(r), f += m.charAt(_ >>> 4 & 15) + m.charAt(15 & _); return f } function X(d) { for (var _ = Array(d.length >> 2), m = 0; m < _.length; m++)_[m] = 0; for (m = 0; m < 8 * d.length; m += 8)_[m >> 5] |= (255 & d.charCodeAt(m / 8)) << m % 32; return _ } function V(d) { for (var _ = "", m = 0; m < 32 * d.length; m += 8)_ += String.fromCharCode(d[m >> 5] >>> m % 32 & 255); return _ } function Y(d, _) { d[_ >> 5] |= 128 << _ % 32, d[14 + (_ + 64 >>> 9 << 4)] = _; for (var m = 1732584193, f = -271733879, r = -1732584194, i = 271733878, n = 0; n < d.length; n += 16) { var h = m, t = f, g = r, e = i; f = md5_ii(f = md5_ii(f = md5_ii(f = md5_ii(f = md5_hh(f = md5_hh(f = md5_hh(f = md5_hh(f = md5_gg(f = md5_gg(f = md5_gg(f = md5_gg(f = md5_ff(f = md5_ff(f = md5_ff(f = md5_ff(f, r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 0], 7, -680876936), f, r, d[n + 1], 12, -389564586), m, f, d[n + 2], 17, 606105819), i, m, d[n + 3], 22, -1044525330), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 4], 7, -176418897), f, r, d[n + 5], 12, 1200080426), m, f, d[n + 6], 17, -1473231341), i, m, d[n + 7], 22, -45705983), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 8], 7, 1770035416), f, r, d[n + 9], 12, -1958414417), m, f, d[n + 10], 17, -42063), i, m, d[n + 11], 22, -1990404162), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 12], 7, 1804603682), f, r, d[n + 13], 12, -40341101), m, f, d[n + 14], 17, -1502002290), i, m, d[n + 15], 22, 1236535329), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 1], 5, -165796510), f, r, d[n + 6], 9, -1069501632), m, f, d[n + 11], 14, 643717713), i, m, d[n + 0], 20, -373897302), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 5], 5, -701558691), f, r, d[n + 10], 9, 38016083), m, f, d[n + 15], 14, -660478335), i, m, d[n + 4], 20, -405537848), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 9], 5, 568446438), f, r, d[n + 14], 9, -1019803690), m, f, d[n + 3], 14, -187363961), i, m, d[n + 8], 20, 1163531501), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 13], 5, -1444681467), f, r, d[n + 2], 9, -51403784), m, f, d[n + 7], 14, 1735328473), i, m, d[n + 12], 20, -1926607734), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 5], 4, -378558), f, r, d[n + 8], 11, -2022574463), m, f, d[n + 11], 16, 1839030562), i, m, d[n + 14], 23, -35309556), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 1], 4, -1530992060), f, r, d[n + 4], 11, 1272893353), m, f, d[n + 7], 16, -155497632), i, m, d[n + 10], 23, -1094730640), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 13], 4, 681279174), f, r, d[n + 0], 11, -358537222), m, f, d[n + 3], 16, -722521979), i, m, d[n + 6], 23, 76029189), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 9], 4, -640364487), f, r, d[n + 12], 11, -421815835), m, f, d[n + 15], 16, 530742520), i, m, d[n + 2], 23, -995338651), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 0], 6, -198630844), f, r, d[n + 7], 10, 1126891415), m, f, d[n + 14], 15, -1416354905), i, m, d[n + 5], 21, -57434055), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 12], 6, 1700485571), f, r, d[n + 3], 10, -1894986606), m, f, d[n + 10], 15, -1051523), i, m, d[n + 1], 21, -2054922799), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 8], 6, 1873313359), f, r, d[n + 15], 10, -30611744), m, f, d[n + 6], 15, -1560198380), i, m, d[n + 13], 21, 1309151649), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 4], 6, -145523070), f, r, d[n + 11], 10, -1120210379), m, f, d[n + 2], 15, 718787259), i, m, d[n + 9], 21, -343485551), m = safe_add(m, h), f = safe_add(f, t), r = safe_add(r, g), i = safe_add(i, e) } return Array(m, f, r, i) } function md5_cmn(d, _, m, f, r, i) { return safe_add(bit_rol(safe_add(safe_add(_, d), safe_add(f, i)), r), m) } function md5_ff(d, _, m, f, r, i, n) { return md5_cmn(_ & m | ~_ & f, d, _, r, i, n) } function md5_gg(d, _, m, f, r, i, n) { return md5_cmn(_ & f | m & ~f, d, _, r, i, n) } function md5_hh(d, _, m, f, r, i, n) { return md5_cmn(_ ^ m ^ f, d, _, r, i, n) } function md5_ii(d, _, m, f, r, i, n) { return md5_cmn(m ^ (_ | ~f), d, _, r, i, n) } function safe_add(d, _) { var m = (65535 & d) + (65535 & _); return (d >> 16) + (_ >> 16) + (m >> 16) << 16 | 65535 & m } function bit_rol(d, _) { return d << _ | d >>> 32 - _ }
+
+		function hashOf(txt) {
+			return MD5(txt);
 		}
-		
-		function getBackgroundColorFromId(id){
+
+		function nodeHash(node) {
+			if (node.hash) {
+				return node.hash;
+			}
+
+			let h = node.text;
+			node.choices.forEach(c => h += "-" + c.text);
+			let ret = hashOf(h);
+			node.hash = ret;
+			return ret;
+		}
+
+		function recursiveHash(node) {
+			if (node.recursiveHash) {
+				return node.recursiveHash;
+			}
+
+			let h = nodeHash(node);
+			node.choices.forEach(c => h += "-" + recursiveHash(nodes[c.next]))
+			let ret = hashOf(h);
+			node.recursiveHash = ret;
+			return ret;
+		}
+
+		function getCurrentNodeId() {
+			var name = myStory.state.currentPathString ? myStory.state.currentPathString : 'root';
+			let state = JSON.parse(myStory.state.ToJson()).variablesState;
+			for (let [key, value] of Object.entries(state)) {
+				name += "," + key + "=" + value
+			}
+			return name;
+		}
+
+		function getBackgroundColorFromId(id) {
 			id = id.indexOf('.') > 0 ? id.substr(0, id.indexOf('.')) : id;
 			var value = id.split().map(c => c.charCodeAt(0)).reduce((a, b) => a + b, 0);
 			return palette[value % palette.length]
 		}
-		
-		function exploreRecursively(parent){
+
+		function exploreRecursively() {
 			var id = getCurrentNodeId();
-			var text = '';
-			try{
-				text = myStory.ContinueMaximally()
+			if (nodes[id]) {
+				return id;
 			}
-			catch(e){
-				console.warn(e.message+' at '+id);
+
+			var text = '';
+			try {
+				text = myStory.ContinueMaximally()
+			} catch (e) {
+				console.warn(e.message + ' at ' + id);
 				text = e.message;
 			}
-			
+
 			var node = {
 				id: id,
 				text: text,
-				parent: parent,
-				choices: new Array(myStory.currentChoices.length)
+				choices: new Array(myStory.currentChoices.length),
 			};
-			
-			//check if we need to create a variation of an existing node
-			var variantCounter = 0,
-				originalId = id;
-			
-			while(nodes[id]){
-				var textVariation = nodes[id].text != node.text,
-					choiceVariation = nodes[id].choices.length != node.choices.length;
-				
-				if (!(choiceVariation && textVariation)){
-					//te node with the same id has the same choices, we can discard this one
-					return id;
-				}
-				
-				if (++variantCounter > 10){
-					console.log('exited after '+variantCounter+' identical variations');
-					return originalId;
-				}
-				
-				node.id = id = originalId + '.v-' + variantCounter;
-			}
+
 			nodes[id] = node;
-			
-			if (myStory.currentChoices.length > 0){
-				for (let i = 0; i < myStory.currentChoices.length; ++i) {
-//					console.log(node.id + ': choice ' + i);
-					let choice = myStory.currentChoices[i];
-					let choiceNode = {
-						id: choice.pathStringOnChoice,
-						index: choice.index,
-						text: choice.text,
-						next: null
-					};
-					
-					//explore the choice
-					let stateBeforeChoice = myStory.state.toJson();
-					
-					myStory.ChooseChoiceIndex(i);
-					choiceNode.next = exploreRecursively(node.id);
-					node.choices[i] = choiceNode;
-					myStory.state.LoadJson(stateBeforeChoice);
-				}
+
+			for (let i = 0; i < myStory.currentChoices.length; ++i) {
+				// console.log(node.id + ': choice ' + i);
+				let choice = myStory.currentChoices[i];
+				let choiceNode = {
+					id: choice.pathStringOnChoice,
+					index: choice.index,
+					text: choice.text,
+					next: null
+				};
+
+				let stateBeforeChoice = myStory.state.toJson();
+
+				myStory.ChooseChoiceIndex(i);
+				choiceNode.next = exploreRecursively();
+				node.choices[i] = choiceNode;
+				myStory.state.LoadJson(stateBeforeChoice);
 			}
-			
+
 			return id;
 		}
+
+		function combine(ids, addChoices = false) {
+			if (ids.length < 2) {
+				return;
+			}
+
+			let validIds = [];
+			for (const id of ids) {
+				if (id in nodes) {
+					validIds.push(id);
+				}
+			}
+
+			if (validIds.length < 2) {
+				return;
+			}
+
+			let choices = [];
+			id = "combined";
+			for (const vid of validIds) {
+				id += "+" + vid;
+				choices.push(...nodes[vid].choices);
+			}
+
+			for (var key in nodes) {
+				for (var choice of nodes[key].choices) {
+					if (validIds.includes(choice.next)) {
+						choice.next = id;
+					}
+				}
+			}
+
+			var node = JSON.parse(JSON.stringify(nodes[validIds[0]]));
+			delete nodes[validIds[0]];
+			node.id = id;
+			if (addChoices) {
+				node.choices = choices;
+				var i = 0;
+				for (var choice of node.choices) {
+					choice.index = i++;
+				}
+			}
+			nodes[id] = node;
+
+			for (var id of validIds) {
+				delete nodes[id];
+			}
+		}
+
+		function optimize() {
+			let matches = {};
+			for (var id in nodes) {
+				matches[recursiveHash(nodes[id])] = [];
+			}
+
+			for (var id in nodes) {
+				matches[recursiveHash(nodes[id])].push(id);
+			}
+
+			for (var recHash in matches) {
+				combine(matches[recHash]);
+			}
+		}
+
 	</script>
 </body>
+
 </html>
